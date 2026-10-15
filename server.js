@@ -3,7 +3,9 @@ const express = require('express');
 const jsforce = require('jsforce');
 
 const app = express();
-app.use(express.json());
+// Intercom sends the whole conversation (custom attributes, contact data, etc.) with every request.
+// Express's default JSON limit is only 100kb, which production conversations can exceed.
+app.use(express.json({ limit: '5mb' }));
 
 // ==========================================
 // SALESFORCE CONNECTION (race-condition safe)
@@ -715,3 +717,4 @@ app.listen(PORT, '0.0.0.0', () => {
   // Warm-up: log in and describe Case at startup so the first request is fast
   loadCaseFieldMeta().catch(e => console.error('Warm-up error:', e.message));
 });
+
